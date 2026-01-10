@@ -10,10 +10,16 @@ def es_mismo_dominio(url_base, url_destino):
 
 def extraer_links(url):
     """Descarga la página y extrae todos los enlaces <a href="">."""
+    
+    EXTENSIONES_IGNORADAS = (".mp4", ".avi", ".mov", ".mp3",".pdf", ".zip", ".rar", ".7z",".exe", ".iso", ".jpg", ".png", ".gif")
+    if url.lower().endswith(EXTENSIONES_IGNORADAS):
+        return []
     try:
-        res = requests.get(url, timeout=5)
+        res = requests.get(url, timeout=5, allow_redirects=True)
         res.raise_for_status()
-    except Exception:
+    except requests.exceptions.Timeout:
+        return []
+    except requests.exceptions.RequestException:
         return []
 
     soup = BeautifulSoup(res.text, "html.parser")
